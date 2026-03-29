@@ -1,10 +1,11 @@
 import express from "express"
-import userRoute from "./user.route"
-import veiculoRoute from "./veiculo.route"
 
-const route = express.Router();
+import userRoutes from "./user.routes"
+import patientRoutes from "./patient.routes"
 
-route.use("/users", userRoute);
-route.use("/veiculos", veiculoRoute);
+const router = express.Router();
 
-export default route;
+router.use("/users", userRoutes);
+router.use("/patients", patientRoutes);
+
+export default router;

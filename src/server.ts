@@ -1,6 +1,14 @@
 import app from "./app"
 
-app.listen(3000, () => {
-    console.log("Server is running on port 3000");
-    console.log("API is ready to use!");
+const HOST = "localhost";
+const PORT = 3000;
+
+app.listen(PORT, () => {
+    console.log(`-----------------------------------------`);
+    console.log(`🚀 API Server is running!`);
+    console.log(`-----------------------------------------`);
+    console.log(`📡 API (v1):       http://${HOST}:${PORT}/api/v1`);
+    console.log(`💓 Health Check:   http://${HOST}:${PORT}/status`);
+    console.log(`-----------------------------------------`);
+    console.log(`💡 Press CTRL+C to stop the server\n`);
 });
