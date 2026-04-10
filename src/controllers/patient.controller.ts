@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { PatientRepository } from "../repositories/patient.repository";
-import { Patient } from "../models/patient.model";
+import { patientSchema, updatePatientSchema, Patient } from "../models/patient.model";
+import { z } from "zod";
 
 const patientRepository = new PatientRepository();
 
@@ -11,39 +12,72 @@ export class PatientController {
     }
 
     async getByUuid(req: Request, res: Response) {
-        const uuid = req.params.uuid as string;
-        const patient = await patientRepository.findByUuid(uuid);
-        if (!patient) {
-            res.status(404).json({ message: "Patient not found" });
-            return;
+        try {
+            const uuid = z.string().uuid().parse(req.params.uuid);
+            const patient = await patientRepository.findByUuid(uuid);
+            if (!patient) {
+                res.status(404).json({ message: "Paciente não encontrado" });
+                return;
+            }
+            res.status(200).json(patient);
+        } catch (error) {
+            if (error instanceof z.ZodError) {
+                res.status(400).json({ error: error.format() });
+                return;
+            }
+            res.status(500).json({ message: "Erro interno do servidor" });
         }
-        res.status(200).json(patient);
     }
 
     async create(req: Request, res: Response) {
-        const { uuid, name, email, birthDate } = req.body;
-        const newPatient: Patient = { uuid, name, email, birthDate: new Date(birthDate) };
-        await patientRepository.create(newPatient);
-        res.status(201).json(newPatient);
+        try {
+            const validatedData = patientSchema.parse(req.body);
+            const newPatient = await patientRepository.create(validatedData);
+            res.status(201).json(newPatient);
+        } catch (error) {
+            if (error instanceof z.ZodError) {
+                res.status(400).json({ error: error.format() });
+                return;
+            }
+            res.status(500).json({ message: "Erro interno do servidor" });
+        }
     }
 
     async update(req: Request, res: Response) {
-        const uuid = req.params.uuid as string;
-        const updatedPatient = await patientRepository.update(uuid, req.body);
-        if (!updatedPatient) {
-            res.status(404).json({ message: "Patient not found" });
-            return;
+        try {
+            const uuid = z.string().uuid().parse(req.params.uuid);
+            const validatedData = updatePatientSchema.parse(req.body) as Partial<Patient>;
+            
+            const updatedPatient = await patientRepository.update(uuid, validatedData);
+            if (!updatedPatient) {
+                res.status(404).json({ message: "Paciente não encontrado" });
+                return;
+            }
+            res.status(200).json(updatedPatient);
+        } catch (error) {
+            if (error instanceof z.ZodError) {
+                res.status(400).json({ error: error.format() });
+                return;
+            }
+            res.status(500).json({ message: "Erro interno do servidor" });
         }
-        res.status(200).json(updatedPatient);
     }
 
     async delete(req: Request, res: Response) {
-        const uuid = req.params.uuid as string;
-        const success = await patientRepository.delete(uuid);
-        if (!success) {
-            res.status(404).json({ message: "Patient not found" });
-            return;
+        try {
+            const uuid = z.string().uuid().parse(req.params.uuid);
+            const success = await patientRepository.delete(uuid);
+            if (!success) {
+                res.status(404).json({ message: "Paciente não encontrado" });
+                return;
+            }
+            res.status(204).send();
+        } catch (error) {
+            if (error instanceof z.ZodError) {
+                res.status(400).json({ error: error.format() });
+                return;
+            }
+            res.status(500).json({ message: "Erro interno do servidor" });
         }
-        res.status(204).send();
     }
 }
