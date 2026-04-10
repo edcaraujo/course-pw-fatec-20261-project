@@ -1,29 +1,14 @@
-import express, { Request, Response } from "express";
+import express from "express";
+import { PatientController } from "../controllers/patient.controller";
 
 const router = express.Router();
+const patientController = new PatientController();
 
-router.get("/", (req: Request, res: Response) => {
-    res.status(200).json({ message: "Getting patient list..." });
-});
-
-router.get("/:id", (req: Request, res: Response) => {
-    res.status(200).json({ message: `Getting patient '${req.params.id}'...` });
-});
-
-router.post("/", (req: Request, res: Response) => {
-    res.status(201).json({ message: "patient created successfully." });
-});
-
-router.put("/:id", (req: Request, res: Response) => {
-    res.status(200).json({ message: `patient '${req.params.id}' updated successfully.` });
-});
-
-router.patch("/:id", (req: Request, res: Response) => {
-    res.status(200).json({ message: `patient '${req.params.id}' updated successfully.` });
-});
-
-router.delete("/:id", (req: Request, res: Response) => {
-    res.status(200).json({ message: `patient '${req.params.id}' deleted successfully.` });
-});
+router.get("/", (req, res) => patientController.getAll(req, res));
+router.get("/:uuid", (req, res) => patientController.getByUuid(req, res));
+router.post("/", (req, res) => patientController.create(req, res));
+router.put("/:uuid", (req, res) => patientController.update(req, res));
+router.patch("/:uuid", (req, res) => patientController.update(req, res));
+router.delete("/:uuid", (req, res) => patientController.delete(req, res));
 
 export default router;

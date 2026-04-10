@@ -21,7 +21,7 @@ app.use((req: Request, res: Response) => {
     const err = {
         error: {
             code: 'NOT_FOUND',
-            message: `Endpoint not found at ${`req.originalUrl`}`
+            message: `Endpoint not found at ${req.originalUrl}`
         }
     };
 
