@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { PatientRepository } from "../repositories/patient.repository";
-import { patientSchema, updatePatientSchema, Patient } from "../models/patient.model";
+import { createPatientSchema, updatePatientSchema, Patient } from "../models/patient.model";
 import { z } from "zod";
 
 const patientRepository = new PatientRepository();
@@ -31,7 +31,7 @@ export class PatientController {
 
     async create(req: Request, res: Response) {
         try {
-            const validatedData = patientSchema.parse(req.body);
+            const validatedData = createPatientSchema.parse(req.body);
             const newPatient = await patientRepository.create(validatedData);
             res.status(201).json(newPatient);
         } catch (error) {
