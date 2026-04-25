@@ -1,9 +1,12 @@
 import express, { Request, Response } from "express";
 
+import logger from "./middlewares/logger.middleware"
+
 import routes from "./routes/index"
 
 const app = express()
 app.use(express.json())
+app.use(logger.logInConsole)
 
 app.use("/api/v1",routes);
 
